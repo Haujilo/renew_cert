@@ -1,13 +1,14 @@
-#! /bin/bash
+#! /bin/bash -x
 
-DOMAIN=${DOMAIN}
+
 RENEW_BEFORE_DAYS=${RENEW_BEFORE_DAYS}
 EMAIL=${EMAIL}
-TIMEOUT=${TIMEOUT:-10}
+export DOMAIN=${DOMAIN}
+export TIMEOUT=${TIMEOUT:-10}
 export DP_Id=${DP_Id}
 export DP_Key=${DP_Key}
 
-CERT_EXPIRE_DATE=`curl --connect-timeout $TIMEOUT -I -s -v https://www.$DOMAIN/ 2>&1 | grep '^*  expire date:' | cut -d" " -f 5-`
+CERT_EXPIRE_DATE=`curl --connect-timeout $TIMEOUT -I -s -v https://www.$DOMAIN/ 2>&1 | grep 'expire date:' | cut -d" " -f 5-`
 
 echo "$DOMAIN certificate expire at $CERT_EXPIRE_DATE"
 
@@ -15,19 +16,19 @@ if [ $FORCE ] || [ `date +%s` -ge `date -d "$CERT_EXPIRE_DATE $RENEW_BEFORE_DAYS
 
   # install acme.sh
   git clone https://github.com/Neilpang/acme.sh.git
-  ./acme.sh/acme.sh --install --accountemail $EMAIL
-  alias acme.sh=~/.acme.sh/acme.sh
+  (cd acme.sh && ./acme.sh --install --accountemail $EMAIL)
+  export ACME_INSTALL_DIR=~/.acme.sh
 
   # renew cert files
-  acme.sh --issue --dns dns_dp -d $DOMAIN  -d "*.$DOMAIN"
-  (cd ~/.acme.sh/$DOMAIN/ && openssl x509 -in $DOMAIN.cer -out $DOMAIN.crt)
+  $ACME_INSTALL_DIR/acme.sh --issue --dns dns_dp -d $DOMAIN  -d "*.$DOMAIN"
 
   # package cert files
   ARCHIVE_FILE=$DOMAIN.`date +%Y%m%d`.zip
-  zip -rj $ARCHIVE_FILE ~/.acme.sh/$DOMAIN/*
+  zip -rj $ARCHIVE_FILE $ACME_INSTALL_DIR/$DOMAIN/*
 
   # TODO:push to servers
 
   # archive cert files
-  echo "$CERT_EXPIRE_DATE" | mail -s "Renew $DOMAIN certificate successful" -a $ARCHIVE_FILE $EMAIL
+  echo "$CERT_EXPIRE_DATE" > mail
+  mpack -s "Renew $DOMAIN certificate successful" -d mail $ARCHIVE_FILE $EMAIL
 fi

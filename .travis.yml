@@ -1,0 +1,9 @@
+language: generic
+dist: trusty
+git:
+  depth: 1
+install:
+  - sudo apt-get --yes install curl openssl mpack ssmtp
+  - printf "root=${EMAIL}\nmailhub=${MAIL_SERVER}\nrewriteDomain=${DOMAIN}\nhostname=${DOMAIN}\nFromLineOverride=YES\nAuthUser=${MAIL_AUTH_USER}\nAuthPass=${MAIL_AUTH_PASSWORD}\nUseTLS=Yes\nUseSTARTTLS=No" | sudo tee /etc/ssmtp/ssmtp.conf
+script:
+  - ./check_and_renew.sh
