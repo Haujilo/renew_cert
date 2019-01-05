@@ -1,5 +1,6 @@
 #! /bin/bash -x
 
+set -e
 
 RENEW_BEFORE_DAYS=${RENEW_BEFORE_DAYS}
 EMAIL=${EMAIL}
@@ -26,7 +27,11 @@ if [ $FORCE ] || [ `date +%s` -ge `date -d "$CERT_EXPIRE_DATE $RENEW_BEFORE_DAYS
   ARCHIVE_FILE=$DOMAIN.`date +%Y%m%d`.zip
   zip -rj $ARCHIVE_FILE $ACME_INSTALL_DIR/$DOMAIN/*
 
-  # TODO:push to servers
+  # push to servers
+  scripts=`ls ./scripts | sort`
+  for script in $scripts; do
+    ./scripts/$script
+  done
 
   # archive cert files
   echo "$CERT_EXPIRE_DATE" > mail
