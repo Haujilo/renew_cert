@@ -73,9 +73,9 @@ def delete_cert(cert_id):
 
 
 def main():
-    domain = os.getenv("$DOMAIN")
+    domain = os.getenv("DOMAIN")
 
-    cert_id = upload_cert(domain, os.getenv("$ACME_INSTALL_DIR"))
+    cert_id = upload_cert(domain, os.getenv("ACME_INSTALL_DIR"))
 
     config_cdn_cert(cert_id, "www.%s" % domain)
 

@@ -30,7 +30,7 @@ def upload_sert(domain, acme_install_dir):
 
 
 def main():
-    upload_sert(os.getenv("$DOMAIN"), os.getenv("$ACME_INSTALL_DIR"))
+    upload_sert(os.getenv("DOMAIN"), os.getenv("ACME_INSTALL_DIR"))
     print("Renew netlify https cert done.")
 
 

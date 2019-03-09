@@ -27,13 +27,13 @@ if [ $FORCE ] || [ `date +%s` -ge `date -d "$CERT_EXPIRE_DATE $RENEW_BEFORE_DAYS
   ARCHIVE_FILE=$DOMAIN.`date +%Y%m%d`.zip
   zip -rj $ARCHIVE_FILE $ACME_INSTALL_DIR/$DOMAIN/*
 
+  # archive cert files
+  echo "$CERT_EXPIRE_DATE" > mail
+  mpack -s "Renew $DOMAIN certificate successful" -d mail $ARCHIVE_FILE $EMAIL
+
   # push to servers
   scripts=`ls ./scripts | sort`
   for script in $scripts; do
     ./scripts/$script
   done
-
-  # archive cert files
-  echo "$CERT_EXPIRE_DATE" > mail
-  mpack -s "Renew $DOMAIN certificate successful" -d mail $ARCHIVE_FILE $EMAIL
 fi
