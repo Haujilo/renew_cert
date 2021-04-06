@@ -21,7 +21,7 @@ if [ $FORCE ] || [ `date +%s` -ge `date -d "$CERT_EXPIRE_DATE $RENEW_BEFORE_DAYS
   export ACME_INSTALL_DIR=~/.acme.sh
 
   # renew cert files
-  $ACME_INSTALL_DIR/acme.sh --issue --dns dns_dp -d $DOMAIN  -d "*.$DOMAIN"
+  $ACME_INSTALL_DIR/acme.sh --issue --dns dns_dp -d $DOMAIN  -d "*.$DOMAIN" -d "*.nas.$DOMAIN"
 
   # package cert files
   ARCHIVE_FILE=$DOMAIN.`date +%Y%m%d`.zip
